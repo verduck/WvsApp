@@ -62,7 +62,7 @@ public class WvsApp extends Application {
 			};
 			animationTimer.start();
 			socket = new Socket();
-			socket.connect(new InetSocketAddress("220.124.113.127", 8888));
+			socket.connect(new InetSocketAddress("localhost", 8888));
 			thread = new MsgRecvThread();
 			thread.start();
 			primaryStage.show();
@@ -155,7 +155,6 @@ public class WvsApp extends Application {
 					if (count <= 0) {
 						break;
 					}
-					in.read(data);
 					PacketReader reader = new PacketReader(data);
 					scenes.get(currentScene).messageReciver(reader);
 				}

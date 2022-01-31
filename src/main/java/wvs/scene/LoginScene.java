@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.PasswordField;
@@ -32,7 +33,6 @@ public class LoginScene extends WvsScene {
 	private int currentStep;
 
 	private Player selectPlayer;
-	private boolean loginSuccess = false;
 	private boolean isNameCheck = false;
 	int id;
 	String name;
@@ -68,7 +68,6 @@ public class LoginScene extends WvsScene {
 		map.getCamera().setTranslateY(1850 - (600 * 0));
 		map.changeLoginMap();
 		uiPanes.get(currentStep).setVisible(true);
-		loginSuccess = false;
 		isNameCheck = false;
 	}
 
@@ -108,7 +107,12 @@ public class LoginScene extends WvsScene {
 		switch (packetId) {
 		case 0: {
 			int text = r.readInt();
-			loginSuccess = false;
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					notice.show(2, text);
+				}
+			});
 		}
 			break;
 		case 1: { // 로그인 성공 시
@@ -117,8 +121,15 @@ public class LoginScene extends WvsScene {
 			mapId = r.readInt();
 			face = r.readInt();
 			System.out.println(id + "," + name + "," + map + "," + face);
-			loginSuccess = true;
 			selectPlayer = new Player(id, name, mapId, face);
+			app.reconnect("localhost", 9090);
+			app.sendPacket(selectedPlayerInfo(selectPlayer).getPacket());
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					app.changeScene(1);
+				}
+			});
 			break;
 		}
 		case 2: {
@@ -181,17 +192,11 @@ public class LoginScene extends WvsScene {
 			btnLogin.setOnAction(new EventHandler<>() {
 				@Override
 				public void handle(ActionEvent e) {
-					if (!loginSuccess) {
-						PacketWriter packet = new PacketWriter(128);
-						packet.writeShort(0x01);
-						packet.writeString(tfEmail.getText());
-						packet.writeString(pfPassword.getText());
-						app.sendPacket(packet.getPacket());
-					} else {
-						app.reconnect("220.124.113.127", 9090);
-						app.sendPacket(selectedPlayerInfo(selectPlayer).getPacket());
-						app.changeScene(1);
-					}
+					PacketWriter packet = new PacketWriter(128);
+					packet.writeShort(0x01);
+					packet.writeString(tfEmail.getText());
+					packet.writeString(pfPassword.getText());
+					app.sendPacket(packet.getPacket());
 				}
 
 			});
