@@ -24,6 +24,11 @@
 |...|...|
 
 예시) 로그인 요청  
+|||
+|---|---|
+|1|short|
+|아이디|string|
+|비밀번호|string|
 ```
 PacketWriter packet = new PacketWriter(128);
 packet.writeShort(0x01); // 번호
