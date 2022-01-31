@@ -23,14 +23,14 @@
 |보낼 데이터|자료형|
 |...|...|
 
-예시)   
-``
-PacketWriter packet = new PacketWriter(128);   
-packet.writeShort(0x01);   
-packet.writeString(tfEmail.getText());   
-packet.writeString(pfPassword.getText());   
-app.sendPacket(packet.getPacket());   
-``
+예시) 로그인 요청  
+```
+PacketWriter packet = new PacketWriter(128);
+packet.writeShort(0x01); // 번호
+packet.writeString(tfEmail.getText());
+packet.writeString(pfPassword.getText());
+app.sendPacket(packet.getPacket());
+```
 
 ### 설명
 ![로그인 화면](doc/image/login-screen.png)
